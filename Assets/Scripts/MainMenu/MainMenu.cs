@@ -11,7 +11,6 @@ public class MainMenu : MonoBehaviour {
     public Terrain terrain;
     public GameObject explosion;
     public GameObject sky;
-    Clouds clouds = new Clouds();
 
     #endregion
 
@@ -65,7 +64,6 @@ public class MainMenu : MonoBehaviour {
             menu.enabled = true;
             sky.GetComponent<MeshRenderer>().enabled = true;
             Camera.main.clearFlags = CameraClearFlags.Skybox;
-            clouds.CloudsRotation(sky);
         }
 
         #endregion

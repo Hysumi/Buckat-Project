@@ -19,8 +19,9 @@ public class MoveBucket : MonoBehaviour {
         while(!explode)
         {
             transform.position += transform.forward * speed *Time.deltaTime;
-            if (Vector3.Distance(transform.position, initialPos) > 100) //Se passar da distância 100 do centro, o Balde é destruído
+            if (Vector3.Distance(transform.position, initialPos) > 200) 
             {
+               // Destroy(this.gameObject);
                 explode = true;
             }
             yield return null;

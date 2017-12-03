@@ -1,14 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InGameController : MonoBehaviour {
-
-    #region Sky
-
-    public GameObject sky;
-    Clouds clouds = new Clouds();
-
-    #endregion
+public class PlayerController : MonoBehaviour {
 
     #region Controller
 
@@ -20,12 +13,11 @@ public class InGameController : MonoBehaviour {
 
     GameObject bucket;
     public GameObject projectile;
+    public int wave;
 
     void Update()
     {
-        clouds.CloudsRotation(sky);
-        ms.MouseLookAt(this.gameObject);
-
+        ms.MouseLookAt(this.gameObject, wave);
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
             bucket = (GameObject) Instantiate(projectile, Camera.main.transform.forward * cameraDistance + projectileAdjust, 
