@@ -7,7 +7,6 @@ public class EnemyController : MonoBehaviour
 
     #region Player variables
 
-    public int wave = 1;
     public int score = 0;
     PlayerController pc;
 
@@ -19,18 +18,25 @@ public class EnemyController : MonoBehaviour
     public List<GameObject> kittenList;
     public float kittenHeight;
 
-    public int maxEnemys = 20, actualWaveCap = 6;
+    public int wave = 1, actualWaveCap = 6;
+    public int maxEnemys = 20;
     public int actualEnemysLenght;
-
-    public float spawnDistance;
-    bool isSpawn = true;
 
     #endregion
 
     #region Temporizador
 
-    public float summonDelay = 1;
+    public float summonDelay;
     float time = 0;
+
+    #endregion
+
+    #region Spawn
+
+
+    public float minSpawnDistance, maxSpawnDistance;
+    public float smoothSpawn;
+    bool isSpawn = true;
 
     #endregion
 
@@ -52,7 +58,7 @@ public class EnemyController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A)) //DEFINIR QUANDO UMA WAVE MUDA
         {
-            print(actualWaveCap * Mathf.Log(actualWaveCap, maxEnemys));
+            //print(actualWaveCap * Mathf.Log(actualWaveCap, maxEnemys));
             wave++;
             pc.wave = wave;
         }
@@ -73,35 +79,112 @@ public class EnemyController : MonoBehaviour
 
     Vector3 GetSpawnPosition()
     {
-        Vector3 spawnPos = new Vector3(999,999);
-
+        Vector3 spawnPos;
+        float x, z;
         switch (wave)
         {
             case 1:
-                float x1 = Random.Range(-spawnDistance, spawnDistance);
-                print("x1: " + x1);
-                float z1 = Random.Range(Mathf.Sqrt(Mathf.Pow(spawnDistance, 2) - Mathf.Pow(x1 / 5,2)), 150);
-                print("z1: " + z1);
-                spawnPos = new Vector3(x1, kittenHeight, z1);
+                x = Random.Range(-maxSpawnDistance, maxSpawnDistance);
+                if(Mathf.Abs(x) > Mathf.Sqrt(2) * minSpawnDistance / 2)
+                {
+                    z = Random.Range(Mathf.Abs(x), maxSpawnDistance);
+                }
+                else
+                {
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance);
+                }
+                spawnPos = new Vector3(x, kittenHeight, z); 
                 return spawnPos;
             case 2:
-                float x2 = Random.Range(-250, 250);
-                float z2 = Random.Range(0, 250);
-                spawnPos = new Vector3(x2, kittenHeight, z2);
+                x = Random.Range(-maxSpawnDistance, maxSpawnDistance) * smoothSpawn;
+                if(Mathf.Abs(x) > maxSpawnDistance)
+                {
+                    x = Mathf.Sign(x) * (maxSpawnDistance - Random.Range(0, maxSpawnDistance-minSpawnDistance));
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance) / smoothSpawn;
+                }
+                else if (Mathf.Abs(x) > minSpawnDistance)
+                {
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance);
+                }
+                else
+                {
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance);
+                }
+                spawnPos = new Vector3(x, kittenHeight, z);
                 return spawnPos;
             case 3:
-                float x3 = Random.Range(-250, 250);
-                float z3 = Random.Range(- (Mathf.Abs(x3) - 1), 250);
-                spawnPos = new Vector3(x3, kittenHeight, z3);
+                z = Random.Range(-maxSpawnDistance, maxSpawnDistance);
+                if (z >= 0)
+                {
+                    z *= smoothSpawn;
+                    if (Mathf.Abs(z) > maxSpawnDistance)
+                    {
+                        z = Mathf.Sign(z) * (maxSpawnDistance - Random.Range(0, maxSpawnDistance - minSpawnDistance));
+                        x = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) -
+                            Mathf.Pow(z, 2)), maxSpawnDistance) / smoothSpawn;
+                    }
+                    else if (Mathf.Abs(z) > minSpawnDistance)
+                    {
+                        x = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) -
+                            Mathf.Pow(z, 2)), maxSpawnDistance);
+                    }
+                    else
+                    {
+                        x = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) -
+                            Mathf.Pow(z, 2)), maxSpawnDistance);
+                    }
+                    spawnPos = new Vector3(x, kittenHeight, z);
+                    return spawnPos;
+                }
+                else
+                {
+                    if (Mathf.Abs(z) > Mathf.Sqrt(2) * minSpawnDistance / 2)
+                    {
+                        x = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Abs(z), maxSpawnDistance);
+                    }
+
+                    else
+                    {
+                        x = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) - 
+                                Mathf.Pow(z, 2)), maxSpawnDistance);
+                    }
+                }
+                spawnPos = new Vector3(x, kittenHeight, z);
                 return spawnPos;
             case 4:
-                float x4 = Random.Range(-250, 250);
-                float z4 = Random.Range(250, 250);
-                spawnPos = new Vector3(x4, kittenHeight, z4);
+                x = Random.Range(-maxSpawnDistance, maxSpawnDistance) * smoothSpawn;
+                if (Mathf.Abs(x) > maxSpawnDistance)
+                {
+                    x = Mathf.Sign(x) * (maxSpawnDistance - Random.Range(0, maxSpawnDistance - minSpawnDistance));
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance) / smoothSpawn;
+                }
+                else if (Mathf.Abs(x) > minSpawnDistance)
+                {
+                    z = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)) - 1, maxSpawnDistance);
+                }
+                else
+                {
+                    z = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) - Mathf.Pow(x, 2)) - 1, maxSpawnDistance);
+                }
+                spawnPos = new Vector3(x, kittenHeight, z);
+                return spawnPos;
+            default:
+                x = Random.Range(-maxSpawnDistance, maxSpawnDistance) * smoothSpawn;
+                if (Mathf.Abs(x) > maxSpawnDistance)
+                {
+                    x = Mathf.Sign(x) * (maxSpawnDistance - Random.Range(0, maxSpawnDistance - minSpawnDistance));
+                    z = Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)), maxSpawnDistance) / smoothSpawn;
+                }
+                else if (Mathf.Abs(x) > minSpawnDistance)
+                {
+                    z = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(maxSpawnDistance, 2) - Mathf.Pow(x, 2)) - 1, maxSpawnDistance);
+                }
+                else
+                {
+                    z = Mathf.Sign(Random.Range(-1, 1)) * Random.Range(Mathf.Sqrt(Mathf.Pow(minSpawnDistance, 2) - Mathf.Pow(x, 2)) - 1, maxSpawnDistance);
+                }
+                spawnPos = new Vector3(x, kittenHeight, z);
                 return spawnPos;
         }
-
-        return spawnPos;
-
     }
 }
